@@ -32,6 +32,12 @@ public class AppController {
 			CreateFancyTree FancyTree, Stage primaryStage) throws IOException
 
 	{
+		
+		
+		
+		
+		
+		
 		// /Passage du controller à la vue et au modèle
 
 		// /TermOutput gère le terminal (traceroute) et son output (recupération

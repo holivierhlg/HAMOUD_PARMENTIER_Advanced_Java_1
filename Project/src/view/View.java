@@ -1,9 +1,10 @@
 package view;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
+
+
 import controller.AppController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -101,7 +102,8 @@ public final class View {
 		final VBox HelpBox = new VBox();
 		HelpBox.setPadding(new Insets(10));
 		// Logo Ece
-		File file = new File("Logo_ECE_Paris.jpg");
+		File file = new File("./Logo_ECE_Paris.jpg");
+		
 		Image image = new Image(file.toURI().toURL().toExternalForm());
 		ImageView logo = new ImageView();
 		logo.setImage(image);
@@ -165,7 +167,7 @@ public final class View {
 		btn.setOnAction(new EventHandler<ActionEvent>() {
 
 			public void handle(ActionEvent e) {
-
+				
 				
 				try {
 					
@@ -176,7 +178,6 @@ public final class View {
 				}
 
 				IpField.setText("");
-				Message.setText("");
 				save.setDisable(false);
 
 				TreeViewBox.getChildren().clear();
