@@ -36,12 +36,10 @@ public class TermOutput {
 	public ArrayList<String> traceroute(String site) throws IOException
 
 	{	
-		System.out.println("ENTREE TRACEROUTE");
 		String line = null;
 		Output = new ArrayList<String>();
 		ProcessBuilder pb = new ProcessBuilder("traceroute", site); ///Setting the command
 		Process p = pb.start(); // /Launching the traceroute
-		System.out.println("L'APRES LAUNCH TRACEROUTE");
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				p.getInputStream())); // /Reading the InputStream
@@ -49,13 +47,14 @@ public class TermOutput {
 		while ((line = reader.readLine()) != null) {
 
 			Output.add(line);
-			loading++;
+			this.loading++;
 	
 			System.out.println(line);
 			
 
 		}
-		System.out.println("L'APRES LECTURE TRACEROUTE");
+		
+		this.loading = 20;
 
 		reader.close();
 		return Output;

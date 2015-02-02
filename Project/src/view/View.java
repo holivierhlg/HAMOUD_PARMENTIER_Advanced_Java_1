@@ -151,6 +151,7 @@ public final class View {
         save.setDisable(true);
         grid.add(ButtonBox, 0, 0);
         grid.add(LoadingBox, 1, 0);
+        ButtonBox.getChildren().add(Message);
         
         //Add the main HBOX layout pane to the scene
         Scene scene = new Scene(mainBox, 800, 250);
@@ -187,22 +188,22 @@ public final class View {
             public void handle(ActionEvent e) {
             	
             	progressBar.setProgress(0);
-            	            	
-                
-            	System.out.println(IpField.getText());
-            	try {
-            		copyLauncher = Controller.launchsearch(IpField.getText());
-            		System.out.println("LE TRY");
-				} catch (IOException | InterruptedException e1) {
-					e1.printStackTrace();
-				}
-            	
+            	copyLauncher = Controller.LoadingTask();
             	progressBar.progressProperty().unbind();
             	progressBar.progressProperty().bind(copyLauncher.progressProperty());
                 
                     
                 new Thread(copyLauncher).start();
-                System.out.println("L'APRES THREAD");
+                
+            	System.out.println(IpField.getText());
+            	try {
+            		
+            		Controller.launchsearch(IpField.getText());
+				} catch (IOException | InterruptedException e1) {
+					e1.printStackTrace();
+				}
+            	
+            	
             	
   
             	IpField.setText("");
@@ -217,7 +218,6 @@ public final class View {
             	TreeView<String> FinalTree = new TreeView<String>(root);
             	TreeViewBox.getChildren().add(FinalTree);
             	TreeViewBox.getChildren().add(sp);
-            
              
             }
         });

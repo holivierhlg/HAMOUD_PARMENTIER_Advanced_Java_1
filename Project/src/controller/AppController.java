@@ -83,7 +83,7 @@ public class AppController {
 
 	}
 	
-/*	public void launchsearch(String site) throws IOException, InterruptedException
+	public void launchsearch(String site) throws IOException, InterruptedException
 	
 	{
 		
@@ -97,8 +97,28 @@ public class AppController {
 		this.FancyTree.Create_OutputFile();
 		
 	}
-	*/
 	
+	public Task LoadingTask() {
+		return new Task(){
+			private int loading=0;
+			@Override
+			protected Object call() throws Exception{
+				while(loading<20)
+				{
+					System.out.println(loading);
+					loading = TermOutput.getLoading();
+					updateProgress(loading, 20);
+					
+					if(loading == 20) return 0;
+					
+				}
+				return true;
+			}
+		};
+	}
+	
+	
+	/*
 	public Task launchsearch(final String site) throws IOException, InterruptedException {
         return new Task() {
         	
@@ -113,20 +133,19 @@ public class AppController {
 			
 			@Override
 			protected Object call() throws Exception {
+				
+				this.TermOutput = new TermOutput();
+				
 
-				System.out.println("L'AVANT VOLLAILE");
 				this.Terminal = ((model.TermOutput) this.TermOutput).traceroute(site); ///Site du traceroute
 				this.monIP = ((model.TermOutput) TermOutput).getMyIP();
 				
-				System.out.println("L'APRES VOLLAILE");
 				
 				while(loading != 18)
         		{
-        			System.out.println("LE WHILE");
             		loading = ((model.TermOutput) this.TermOutput).getLoading();
             		updateProgress(loading, 19);
         		}
-        		System.out.println("L'APRES WHILE");
 				
         		
         		///Construire et obtenir mon arbre depuis les informations du terminal
@@ -135,12 +154,12 @@ public class AppController {
         		this.FancyTreeContent = ((model.Tree) this.Tree).getFancyTree();
         		((CreateFancyTree) this.FancyTree).Create_OutputFile();
         		
-        		System.out.println("L'APRES LAUNCH");
         		
         		
                 return true;
             }
         };
     }
+    */
 
 }
