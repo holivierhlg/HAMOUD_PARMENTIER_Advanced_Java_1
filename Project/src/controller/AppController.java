@@ -1,32 +1,12 @@
 package controller;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.ProcessBuilder;
-/*
- * %  traceroute fr.wikipedia.org
-traceroute to rr.knams.wikimedia.org (145.97.39.155), 30 hops max, 38 byte packets
- 1  80.67.162.30 (80.67.162.30)  0.341 ms  0.300 ms  0.299 ms
- 2  telehouse2-gw.netaktiv.com (80.67.170.1)  5.686 ms  1.656 ms  0.428 ms
- 3  giga.gitoyen.net (80.67.168.16)  1.169 ms  0.704 ms  0.563 ms
- 4  62.4.73.27 (62.4.73.27)  2.382 ms  1.623 ms  1.297 ms
- 5  ge5-2.mpr2.cdg2.fr.above.net (64.125.23.86)  1.196 ms ge9-4.mpr2.cdg2.fr.above.net (64.125.23.102)  1.290 ms ge5-1.mpr2.cdg2.fr.above.net (64.125.23.82)  30.297 ms
- 6  so-5-0-0.cr1.lhr3.uk.above.net (64.125.23.13)  41.900 ms  9.658 ms  9.118 ms
- 7  so-7-0-0.mpr1.ams5.nl.above.net (64.125.27.178)  23.403 ms  23.209 ms  23.703 ms
- 8  64.125.27.221.available.above.net (64.125.27.221)  19.149 ms so-0-0-0.mpr3.ams1.nl.above.net (64.125.27.181)  19.378 ms 64.125.27.221.available.above.net (64.125.27.221)  20.017 ms
- 9  PNI.Surfnet.ams1.above.net (82.98.247.2)  16.834 ms  16.384 ms  16.129 ms
-10  af-500.xsr01.amsterdam1a.surf.net (145.145.80.9)  21.525 ms 20.645 ms  24.101 ms
-11  kncsw001-router.customer.surf.net (145.145.18.158)  20.233 ms 16.868 ms  19.568 ms
-12  gi0-24.csw2-knams.wikimedia.org (145.97.32.29)  23.614 ms  23.270 ms  23.574 ms
-13  rr.knams.wikimedia.org (145.97.39.155)  23.992 ms  23.050 ms 23.657 ms
-
-*
-*
-**/
-
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -37,56 +17,122 @@ import model.TermOutput;
 
 public class AppController {
 
-	private final Tree Tree; 
+	private final Tree Tree;
 	private final View View;
 	private final TermOutput TermOutput;
 	private final CreateFancyTree FancyTree;
 	private ArrayList<String> Terminal;
 	private String monIP;
-	private String site = "google.com"; 
-	public String FancyTreeContent; 
+	public String FancyTreeContent;
 	public TreeItem<String> MyTree;
-	public ImageView schema; 
+	public ImageView schema;
 	public boolean firsttime = true;
-	public AppController(Tree tree, View view, TermOutput termOutput, CreateFancyTree FancyTree, Stage primaryStage) throws IOException
-	
-	{
-	///Passage du controller à la vue et au modèle
-	this.Tree= tree;
-	this.Tree.setController(this);
-	
-	this.View = view; 
-	this.View.setController(this);
-	
-	
-	
-	
-	///Obtenir les output du terminal avec les commandes ipconfig et traceroute
-	this.TermOutput = termOutput; 
-	this.FancyTree = FancyTree;
-	this.FancyTree.setController(this);
 
-	
-	///Affichage visuel de l'abre
-	
-	this.View.LancerVue(primaryStage);
-	
+	public AppController(Tree tree, View view, TermOutput termOutput,
+			CreateFancyTree FancyTree, Stage primaryStage) throws IOException
+
+	{
+		// /Passage du controller à la vue et au modèle
+
+		// /TermOutput gère le terminal (traceroute) et son output (recupération
+		// ligne à ligne, récupération de l'IP de la machine)
+		this.TermOutput = termOutput;
+
+		// /Tree implemente toute la création de l'arbre à partir de l'output du
+		// terminal (via des TreeItem<String>)
+		this.Tree = tree;
+		this.Tree.setController(this);
+
+		// /FancyTree implemente la génération d'un arbre "joli" (par rapport à
+		// un treeview usuel)
+		this.FancyTree = FancyTree;
+		this.FancyTree.setController(this);
+
+		// /Affichage de la GUI et passage du controller à la vue
+		this.View = view;
+		this.View.setController(this);
+		this.View.LancerVue(primaryStage);
 
 	}
-	
-	public void launchsearch(String site) throws IOException, InterruptedException
-	
+
+	// /Lancement d'une recherche
+	public void launchsearch(String site) throws IOException,
+			InterruptedException
+
 	{
-		
-		this.Terminal = this.TermOutput.traceroute(site); ///Site du traceroute
-		this.monIP = TermOutput.getMyIP();
-		
-		///Construire et obtenir mon arbre depuis les informations du terminal
+
+		// /lancement d'un traceroute avec le site précisé dans le field
+		this.Terminal = this.TermOutput.traceroute(site);
+		this.monIP = TermOutput.getMyIP(); // /Explicite
+
+		// /Construire et obtenir mon arbre depuis les informations du terminal
 		this.MyTree = this.Tree.BuildTree(this.Terminal, monIP);
-		System.out.println(this.MyTree);
 		this.FancyTreeContent = this.Tree.getFancyTree();
 		this.FancyTree.Create_OutputFile();
-		
+
+	}
+
+	// /Bouger un fichier (le sauvegarder, dans les faits) // Fonction de
+	// sauvegarde
+	public boolean moveFile(File file)
+
+	{
+		if (file != null) {
+
+			try {
+
+				File infile = new File("graph1.png");
+				InputStream inStream = null;
+				OutputStream outStream = null;
+				inStream = new FileInputStream(infile);
+				outStream = new FileOutputStream(file.getAbsolutePath()
+						+ "/NetGraph.png");
+
+				byte[] buffer = new byte[1024];
+
+				int length;
+				// copy the file content in bytes
+				while ((length = inStream.read(buffer)) > 0) {
+
+					outStream.write(buffer, 0, length);
+
+				}
+
+				inStream.close();
+				outStream.close();
+				return true;
+
+			} catch (IOException e1) {
+
+				e1.printStackTrace();
+				return false;
+			}
+
+		}
+		return false;
+
+	}
+
+	
+	///Gérérer une RandomIP (Random 0-255 4 fois, pas de vérification de "l'existence" réelle de l'IP
+	public String generateRandomIP()
+
+	{
+		int part;
+
+		String output = "";
+
+		for (int i = 0; i < 3; i++) {
+			part = (int) (Math.random() * (255));
+			output += Integer.toString(part);
+			output += ".";
+		}
+
+		part = (int) (Math.random() * (255));
+		output += Integer.toString(part);
+
+		return output;
+
 	}
 
 }

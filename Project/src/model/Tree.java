@@ -1,7 +1,5 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +12,7 @@ public class Tree {
 	private TreeItem<String> root;
 	private AppController controller;
 	private boolean Switch = false;
-	private String FancyTree =  "digraph G {";  
+	private String FancyTree =  "strict digraph G {";  
 	private final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 	private String GETTINGSTEP_PATTERN = "\\s\\s\\s";
 	
@@ -23,10 +21,13 @@ public class Tree {
 	
 	{
 		
+		///Formatage de l'output pour la creation d'un arbre avec dot.
 		FancyTree += "<" + gauche + "> -> <" + droite + ">;";
 		
 	}
 
+	
+	///Explicite
 	public void AssignParentsToChild(ArrayList<TreeItem<String>> parents,
 			ArrayList<TreeItem<String>> childs)
 
@@ -46,7 +47,7 @@ public class Tree {
 
 	}
 
-	// /Build the tree from the terminal output
+	///Contruire l'arbre depuis l'output du terminal
 	public TreeItem<String> BuildTree(ArrayList<String> TerminalOutput, String monIP)
 
 	{
@@ -56,6 +57,7 @@ public class Tree {
 		ArrayList<TreeItem<String>> childs = new ArrayList<TreeItem<String>>();
 		
 		
+		///Check si c'est le premier lancement, pour ne pas remettre à 0 la liste déjà connue. 
 		if(controller.firsttime == false)
 			
 		{
@@ -64,12 +66,12 @@ public class Tree {
 		  
 	    }
 		else {
-		
 		controller.firsttime = false;
 		root = new TreeItem<String>(monIP);
 		root.setExpanded(true);
-		
 		}
+		
+		///Notre IP est le premier parent
 	    parents.add(root);
 		
 
@@ -79,17 +81,17 @@ public class Tree {
 			Pattern patternStep = Pattern.compile(GETTINGSTEP_PATTERN);
 			Matcher matcherStep = patternStep.matcher(TerminalOutput.get(i));
 
-			// /If we are in a new row
+			///Si nous sommes dans un nouveau "niveau" de profondeur avec vérification via regex. 
 			if (!matcherStep.find()) {
 				
 
-				// /Appending parents to childs
+				///Assign des parents aux enfants
 				if (Switch == true) {
 					AssignParentsToChild(parents, childs);
 					Switch = false;
 					parents = new ArrayList<TreeItem<String>>();
 				}
-				// /Appending childs to parents
+				// /Assign des enfants aux parents suivants (afin que 3 enfants puissent avoir 3 enfants, etc...)
 				else {
 					AssignParentsToChild(childs, parents);
 					Switch = true;
@@ -99,7 +101,7 @@ public class Tree {
 
 			Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
 			Matcher matcher = pattern.matcher(TerminalOutput.get(i));
-			// /Getting the ip address of the line
+			/// Obtention de l'IP contenue dans la ligne via la regex
 			if (matcher.find()) {
 
 				TreeItem<String> Nouveau = new TreeItem<String>(matcher.group());
@@ -116,6 +118,7 @@ public class Tree {
 			}
 			else {
 				
+			///S'il y a des étoiles, on considère que la ligne est quand même une node, mais inconnue. 
 				TreeItem<String> Nouveau = new TreeItem<String>("Hidden adresse " + r);
 				r++;
 
@@ -132,13 +135,13 @@ public class Tree {
 			}
 
 		}
-		
+		///Assign de la dernière adresse.
 		if (Switch == true) {
 			AssignParentsToChild(parents, childs);
 			Switch = false;
 		
 		}
-		// /Appending childs to parents
+	
 		else {
 			AssignParentsToChild(childs, parents);
 			Switch = true;
@@ -155,6 +158,7 @@ public class Tree {
 	{
 		this.controller = controller;
 	}
+	
 	public String getFancyTree() 
 	
 	{
