@@ -47,14 +47,13 @@ import javafx.stage.FileChooser;
 
 public final class View {
 	
-	Task copyLauncher;
 	
 	private AppController Controller; 
 	private TreeItem<String> root = new TreeItem<String>();
     
     public void LancerVue(final Stage primaryStage) throws MalformedURLException {
         
-    	final ProgressBar progressBar = new ProgressBar(0);
+    	final ProgressBar ProgressBar = new ProgressBar(0);
     	
     	final Menu menu1 = new Menu("File");
     	final MenuItem save = new MenuItem("Save schema as PNG");
@@ -98,7 +97,6 @@ public final class View {
         final HBox TreeViewBox = new HBox();
         //final HBox FancyViewBox = new HBox();
         final HBox ButtonBox = new HBox();
-        final HBox LoadingBox = new HBox();
         
     	final ScrollPane sp = new ScrollPane();
     	sp.setMinWidth(500);
@@ -138,8 +136,8 @@ public final class View {
         ButtonBox.getChildren().add(IpField);
         ButtonBox.getChildren().add(btn);
         ButtonBox.getChildren().add(btnrandom);
-        LoadingBox.getChildren().add(progressBar);
-      
+        ButtonBox.getChildren().add(ProgressBar);
+        
     	ButtonBox.setMargin(IpField, new Insets(5,5, 5, 5));
     	ButtonBox.setMargin(btn, new Insets(5, 5, 5, 5));
     	ButtonBox.setMargin(btnrandom, new Insets(5, 5, 0, 0));
@@ -150,7 +148,6 @@ public final class View {
         
         save.setDisable(true);
         grid.add(ButtonBox, 0, 0);
-        grid.add(LoadingBox, 1, 0);
         ButtonBox.getChildren().add(Message);
         
         //Add the main HBOX layout pane to the scene
@@ -186,14 +183,10 @@ public final class View {
         btn.setOnAction(new EventHandler<ActionEvent>() {
           	 
             public void handle(ActionEvent e) {
+            	                
             	
-            	progressBar.setProgress(0);
-            	copyLauncher = Controller.LoadingTask();
-            	progressBar.progressProperty().unbind();
-            	progressBar.progressProperty().bind(copyLauncher.progressProperty());
-                
-                    
-                new Thread(copyLauncher).start();
+            	
+
                 
             	System.out.println(IpField.getText());
             	try {
@@ -202,7 +195,6 @@ public final class View {
 				} catch (IOException | InterruptedException e1) {
 					e1.printStackTrace();
 				}
-            	
             	
             	
   

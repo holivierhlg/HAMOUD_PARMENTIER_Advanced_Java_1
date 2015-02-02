@@ -98,7 +98,7 @@ public class AppController {
 		
 	}
 	
-	public Task LoadingTask() {
+/*	public Task LoadingTask() {
 		return new Task(){
 			private int loading=0;
 			@Override
@@ -116,6 +116,7 @@ public class AppController {
 			}
 		};
 	}
+	*/
 	
 	
 	/*
