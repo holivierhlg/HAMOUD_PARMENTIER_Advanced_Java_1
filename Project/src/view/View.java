@@ -92,7 +92,7 @@ public final class View {
 		ButtonBox.getChildren().add(Message);
 
 		// /Display de la fenêtre principale
-		Scene scene = new Scene(mainBox, 800, 250);
+		Scene scene = new Scene(mainBox, 800, 550);
 		primaryStage.setTitle("NetGraph");
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -112,18 +112,26 @@ public final class View {
 		logo.setCache(true);
 		// /Texte
 		final Label HelpContent = new Label(
-				"Welcome in NetGraph.\n\nGenerate your visual Traceroute.\nTo start, enter an IP address or an domain name (or click on random IP if you're not in the mood) and click on generate.\n\nOnce you generated the graph, you can save it by clicking on file / save as png.\n \n \n \n \n");
+				"Welcome in NetGraph.\n\nGenerate your visual Traceroute.\nTo start, enter an IP address or an domain name (or click on random IP if you're not in the mood) and click on generate.\n\nOnce you generated the graph, you can save it by clicking on file / save as png.");
 		// /Button pour clore
 		Button closehelp = new Button("Close");
 
-		// /Ajout de tout dans la box
-		HelpBox.getChildren().add(logo);
-		HelpBox.getChildren().add(HelpContent);
-		HelpBox.getChildren().add(closehelp);
+		
+		// HelpGrid
+		
+		final GridPane HelpGrid = new GridPane();
+		HelpGrid.setAlignment(Pos.TOP_CENTER);
+		HelpGrid.setHgap(10);
+		HelpGrid.setVgap(10);
+		HelpGrid.setPadding(new Insets(5, 5, 5, 5));	
+		
+		HelpGrid.add(logo,0,0);
+		HelpGrid.add(HelpContent, 0, 1);
+		HelpGrid.add(closehelp, 0,2);
 
 		// /Puis de la box dans une fenêtre
 		final Stage helpStage = new Stage();
-		Scene helpscene = new Scene(HelpBox, 800, 600);
+		Scene helpscene = new Scene(HelpGrid, 800, 220);
 		helpStage.setScene(helpscene);
 		
 		///Choix du directory pour la sauvegarde
@@ -158,9 +166,9 @@ public final class View {
 
 			public void handle(ActionEvent e) {
 
-				System.out.println(IpField.getText());
+				
 				try {
-
+					
 					Controller.launchsearch(IpField.getText());
 				} catch (IOException | InterruptedException e1) {
 					
@@ -168,6 +176,7 @@ public final class View {
 				}
 
 				IpField.setText("");
+				Message.setText("");
 				save.setDisable(false);
 
 				TreeViewBox.getChildren().clear();
