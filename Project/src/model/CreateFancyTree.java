@@ -21,9 +21,9 @@ public class CreateFancyTree {
 		PrintWriter writer = new PrintWriter("graph.gv", "UTF-8");
 		writer.println(Controller.FancyTreeContent);
 		writer.close();
-		Process p = Runtime.getRuntime().exec("dot -Tpng graph.gv -o graph1.png");
+		//Process p = Runtime.getRuntime().exec("dot -Tpng graph.gv -o graph1.png");
 		///We have to wait for the 
-		p.waitFor();
+		//p.waitFor();
 		File file = new File("graph1.png");
 		Image image = new Image(file.toURI().toURL().toExternalForm());
 

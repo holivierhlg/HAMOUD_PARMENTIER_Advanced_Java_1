@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder;
+
+import javafx.concurrent.Task;
 /*
  * %  traceroute fr.wikipedia.org
 traceroute to rr.knams.wikimedia.org (145.97.39.155), 30 hops max, 38 byte packets
@@ -24,6 +26,13 @@ traceroute to rr.knams.wikimedia.org (145.97.39.155), 30 hops max, 38 byte packe
 *
 *
 **/
+
+
+
+
+
+
+
 
 import java.util.ArrayList;
 
@@ -74,7 +83,7 @@ public class AppController {
 
 	}
 	
-	public void launchsearch(String site) throws IOException, InterruptedException
+/*	public void launchsearch(String site) throws IOException, InterruptedException
 	
 	{
 		
@@ -88,5 +97,50 @@ public class AppController {
 		this.FancyTree.Create_OutputFile();
 		
 	}
+	*/
+	
+	public Task launchsearch(final String site) throws IOException, InterruptedException {
+        return new Task() {
+        	
+			private int loading = 0;
+			private Object TermOutput;
+			private ArrayList<String> Terminal;
+			private String monIP;
+			private model.Tree Tree;
+			private TreeItem<String> MyTree;
+			private String FancyTreeContent;
+			private CreateFancyTree FancyTree;
+			
+			@Override
+			protected Object call() throws Exception {
+
+				System.out.println("L'AVANT VOLLAILE");
+				this.Terminal = ((model.TermOutput) this.TermOutput).traceroute(site); ///Site du traceroute
+				this.monIP = ((model.TermOutput) TermOutput).getMyIP();
+				
+				System.out.println("L'APRES VOLLAILE");
+				
+				while(loading != 18)
+        		{
+        			System.out.println("LE WHILE");
+            		loading = ((model.TermOutput) this.TermOutput).getLoading();
+            		updateProgress(loading, 19);
+        		}
+        		System.out.println("L'APRES WHILE");
+				
+        		
+        		///Construire et obtenir mon arbre depuis les informations du terminal
+        		this.MyTree = ((model.Tree) this.Tree).BuildTree((ArrayList<String>) this.Terminal,(String) monIP);
+        		System.out.println(this.MyTree);
+        		this.FancyTreeContent = ((model.Tree) this.Tree).getFancyTree();
+        		((CreateFancyTree) this.FancyTree).Create_OutputFile();
+        		
+        		System.out.println("L'APRES LAUNCH");
+        		
+        		
+                return true;
+            }
+        };
+    }
 
 }

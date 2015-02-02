@@ -11,6 +11,8 @@ import java.nio.file.Files;
 
 import javax.imageio.ImageIO;
 
+import javafx.concurrent.Task;
+
 import controller.AppController;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -33,6 +35,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
@@ -43,11 +47,14 @@ import javafx.stage.FileChooser;
 
 public final class View {
 	
+	Task copyLauncher;
+	
 	private AppController Controller; 
 	private TreeItem<String> root = new TreeItem<String>();
     
     public void LancerVue(final Stage primaryStage) throws MalformedURLException {
         
+    	final ProgressBar progressBar = new ProgressBar(0);
     	
     	final Menu menu1 = new Menu("File");
     	final MenuItem save = new MenuItem("Save schema as PNG");
@@ -91,6 +98,7 @@ public final class View {
         final HBox TreeViewBox = new HBox();
         //final HBox FancyViewBox = new HBox();
         final HBox ButtonBox = new HBox();
+        final HBox LoadingBox = new HBox();
         
     	final ScrollPane sp = new ScrollPane();
     	sp.setMinWidth(500);
@@ -130,6 +138,7 @@ public final class View {
         ButtonBox.getChildren().add(IpField);
         ButtonBox.getChildren().add(btn);
         ButtonBox.getChildren().add(btnrandom);
+        LoadingBox.getChildren().add(progressBar);
       
     	ButtonBox.setMargin(IpField, new Insets(5,5, 5, 5));
     	ButtonBox.setMargin(btn, new Insets(5, 5, 5, 5));
@@ -141,6 +150,7 @@ public final class View {
         
         save.setDisable(true);
         grid.add(ButtonBox, 0, 0);
+        grid.add(LoadingBox, 1, 0);
         
         //Add the main HBOX layout pane to the scene
         Scene scene = new Scene(mainBox, 800, 250);
@@ -176,19 +186,29 @@ public final class View {
           	 
             public void handle(ActionEvent e) {
             	
+            	progressBar.setProgress(0);
+            	            	
+                
             	System.out.println(IpField.getText());
             	try {
-            		
-					Controller.launchsearch(IpField.getText());
+            		copyLauncher = Controller.launchsearch(IpField.getText());
+            		System.out.println("LE TRY");
 				} catch (IOException | InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+            	
+            	progressBar.progressProperty().unbind();
+            	progressBar.progressProperty().bind(copyLauncher.progressProperty());
+                
+                    
+                new Thread(copyLauncher).start();
+                System.out.println("L'APRES THREAD");
             	
   
             	IpField.setText("");
             	save.setDisable(false);
             
+            	
             	
             	TreeViewBox.getChildren().clear();
             	
