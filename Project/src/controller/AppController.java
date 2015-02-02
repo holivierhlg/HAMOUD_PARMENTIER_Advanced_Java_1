@@ -27,15 +27,66 @@ traceroute to rr.knams.wikimedia.org (145.97.39.155), 30 hops max, 38 byte packe
 
 import java.util.ArrayList;
 
-import model.GetTreeIP;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+import view.View;
+import model.CreateFancyTree;
+import model.Tree;
+import model.TermOutput;
 
 public class AppController {
 
-	static public void main(String[] args) throws IOException
-
-	{
+	private final Tree Tree; 
+	private final View View;
+	private final TermOutput TermOutput;
+	private final CreateFancyTree FancyTree;
+	private ArrayList<String> Terminal;
+	private String monIP;
+	private String site = "google.com"; 
+	public String FancyTreeContent; 
+	public TreeItem<String> MyTree;
+	public ImageView schema; 
+	public boolean firsttime = true;
+	public AppController(Tree tree, View view, TermOutput termOutput, CreateFancyTree FancyTree, Stage primaryStage) throws IOException
 	
-		new GetTreeIP(); 
+	{
+	///Passage du controller à la vue et au modèle
+	this.Tree= tree;
+	this.Tree.setController(this);
+	
+	this.View = view; 
+	this.View.setController(this);
+	
+	
+	
+	
+	///Obtenir les output du terminal avec les commandes ipconfig et traceroute
+	this.TermOutput = termOutput; 
+	this.FancyTree = FancyTree;
+	this.FancyTree.setController(this);
+
+	
+	///Affichage visuel de l'abre
+	
+	this.View.LancerVue(primaryStage);
+	
+
+	}
+	
+	public void launchsearch(String site) throws IOException, InterruptedException
+	
+	{
+		
+		this.Terminal = this.TermOutput.traceroute(site); ///Site du traceroute
+		this.monIP = TermOutput.getMyIP();
+		
+		///Construire et obtenir mon arbre depuis les informations du terminal
+		this.MyTree = this.Tree.BuildTree(this.Terminal, monIP);
+		System.out.println(this.MyTree);
+		this.FancyTreeContent = this.Tree.getFancyTree();
+		this.FancyTree.Create_OutputFile();
+		
 	}
 
 }
